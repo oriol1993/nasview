@@ -1,0 +1,24 @@
+name: build
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt pyinstaller
+      - run: >
+          pyinstaller --noconfirm --name nasview --windowed
+          --collect-all pyvista --collect-all pyvistaqt --collect-all vtkmodules
+          --exclude-module PyQt5 --exclude-module PyQt6 --exclude-module tkinter
+          nasview.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nasview-windows
+          path: dist/nasview
